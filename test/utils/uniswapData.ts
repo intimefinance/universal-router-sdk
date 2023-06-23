@@ -1,7 +1,7 @@
 import JSBI from 'jsbi'
 import { ethers } from 'ethers'
-import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@uniswap/router-sdk'
-import { Trade as V2Trade, Pair, Route as RouteV2, computePairAddress } from '@uniswap/v2-sdk'
+import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@intimefinance/router-sdk'
+import { Trade as V2Trade, Pair, Route as RouteV2, computePairAddress } from '@intimefinance/v2-sdk'
 import {
   Trade as V3Trade,
   Pool,
@@ -88,7 +88,11 @@ export async function getPair(tokenA: Token, tokenB: Token, blockNumber: number)
   const contract = new ethers.Contract(pairAddress, V2_ABI, getProvider())
   const { reserve0, reserve1 } = await contract.getReserves({ blockTag: blockNumber })
   const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
-  return new Pair(CurrencyAmount.fromRawAmount(token0, reserve0), CurrencyAmount.fromRawAmount(token1, reserve1))
+  return new Pair(
+    V2_FACTORY,
+    CurrencyAmount.fromRawAmount(token0, reserve0),
+    CurrencyAmount.fromRawAmount(token1, reserve1)
+  )
 }
 
 export async function getPool(tokenA: Token, tokenB: Token, feeAmount: FeeAmount, blockNumber: number): Promise<Pool> {
